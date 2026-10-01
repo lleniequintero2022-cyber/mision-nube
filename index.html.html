@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misión Nube - Teams</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#f3f6fb;color:#172033}
+.container{max-width:900px;margin:0 auto;padding:24px}
+.card{background:#fff;border-radius:18px;padding:26px;box-shadow:0 6px 22px rgba(20,40,80,.10);margin-bottom:18px}
+h1{margin:0 0 8px;font-size:30px}
+h2{font-size:21px;line-height:1.4}
+.subtitle{color:#5b6577}
+.badges{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.badge{background:#eef3ff;border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700}
+button{font:inherit}
+.start,.next,.restart{border:0;border-radius:12px;padding:13px 20px;font-weight:700;cursor:pointer;background:#5b5bd6;color:white}
+.start:hover,.next:hover,.restart:hover{filter:brightness(.95)}
+.top{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+.score{font-size:22px;font-weight:800}
+.progress{height:10px;background:#e5e9f2;border-radius:20px;overflow:hidden;margin-top:16px}
+.progressbar{height:100%;width:0;background:#5b5bd6;transition:.25s}
+.meta{font-size:13px;color:#667085;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.option{display:block;width:100%;text-align:left;border:2px solid #e1e5ee;background:#fff;border-radius:12px;padding:14px;margin:10px 0;cursor:pointer;transition:.15s}
+.option:hover{border-color:#5b5bd6;background:#f7f7ff}
+.option:disabled{cursor:default}
+.option.correct{border-color:#238653;background:#eaf8f0}
+.option.wrong{border-color:#c93c3c;background:#fff0f0}
+.feedback{margin-top:15px;padding:14px;border-radius:12px;display:none;line-height:1.5}
+.feedback.show{display:block}
+.correctbox{background:#eaf8f0;border:1px solid #9ed3b5}
+.wrongbox{background:#fff0f0;border:1px solid #e3a0a0}
+.hidden{display:none}
+.result{text-align:center}
+.bigscore{font-size:64px;font-weight:900;margin:12px 0}
+.level{font-size:24px;font-weight:800;margin-bottom:10px}
+.instructions{line-height:1.7}
+.small{font-size:13px;color:#667085}
+@media(max-width:600px){.container{padding:14px}.card{padding:19px}h1{font-size:25px}.bigscore{font-size:50px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div id="intro" class="card">
+<h1>☁️ Misión: Rescate de la Nube</h1>
+<p class="subtitle">Actividad interactiva – Almacenamiento y organización de información en la nube</p>
+<div class="badges">
+<span class="badge">20 retos</span>
+<span class="badge">100 puntos</span>
+<span class="badge">5 puntos por respuesta</span>
+<span class="badge">Retroalimentación inmediata</span>
+</div>
+<div class="instructions">
+<h2>🎯 Objetivo de aprendizaje</h2>
+<p>Analizar y aplicar criterios adecuados para almacenar, organizar, buscar, compartir y proteger información en la nube.</p>
+<h2>📌 Instrucciones</h2>
+<ol>
+<li>Lee cuidadosamente cada situación.</li>
+<li>Selecciona una sola respuesta.</li>
+<li>Cada respuesta correcta vale <strong>5 puntos</strong>.</li>
+<li>Una vez respondida una pregunta, no podrás cambiar la respuesta.</li>
+<li>Lee la retroalimentación antes de continuar.</li>
+<li>Completa los 20 retos para obtener una puntuación sobre 100.</li>
+<li>Al finalizar, toma una captura de pantalla de tu resultado para entregarla en Teams.</li>
+</ol>
+</div>
+<button class="start" id="startBtn">🚀 Iniciar misión</button>
+</div>
+
+<div id="quiz" class="hidden">
+<div class="card">
+<div class="top">
+<div>
+<div class="meta" id="category"></div>
+<div class="small">Pregunta <span id="current">1</span> de 20</div>
+</div>
+<div class="score">⭐ <span id="score">0</span>/100</div>
+</div>
+<div class="progress"><div class="progressbar" id="progress"></div></div>
+</div>
+
+<div class="card">
+<h2 id="question"></h2>
+<div id="options"></div>
+<div id="feedback" class="feedback"></div>
+<button id="nextBtn" class="next hidden">Siguiente reto →</button>
+</div>
+</div>
+
+<div id="result" class="card result hidden"></div>
+
+</div>
+
+<script>
+const questions = [
+{cat:"📁 Organización",q:"Una estudiante guarda trabajos de varias materias en una sola carpeta llamada “Cosas”. ¿Cuál sería una mejor solución?",o:["Crear carpetas por asignatura y subcarpetas por actividad.","Cambiar “Cosas” por “Importante”.","Guardar todo nuevamente en el escritorio.","Crear una carpeta diferente para cada archivo."],a:0,e:"Una estructura jerárquica permite clasificar la información de lo general a lo específico."},
+{cat:"📁 Organización",q:"¿Cuál estructura es más adecuada para organizar los trabajos de Tecnología?",o:["Tecnología → Trimestre III → Talleres → Proyecto final","Tecnología → Cosas → Nuevo","Archivos → Varios → Trabajos","Proyecto final → Tecnología → Trimestre"],a:0,e:"La primera opción utiliza una estructura lógica y jerárquica."},
+{cat:"🏷️ Nomenclatura",q:"¿Cuál nombre de archivo permite identificar mejor su contenido?",o:["documento1.docx","final_final_ahora_si.docx","GoogleSheets_Almacenamiento_2026.docx","nuevo1.docx"],a:2,e:"Un nombre descriptivo permite reconocer el contenido sin necesidad de abrir el archivo."},
+{cat:"🏷️ Nomenclatura",q:"¿Cuál práctica ayuda a mantener ordenada una carpeta?",o:["Utilizar nombres genéricos.","Usar nombres claros y consistentes.","Nombrar todos los archivos “Final”.","Utilizar únicamente números."],a:1,e:"Los nombres claros y consistentes facilitan la búsqueda y administración."},
+{cat:"📄 Archivos",q:"¿Cuál de los siguientes archivos corresponde a una hoja de cálculo?",o:["Informe.pdf","Notas.xlsx","Presentacion.pptx","Foto.png"],a:1,e:"XLSX es un formato utilizado habitualmente para hojas de cálculo."},
+{cat:"🔎 Búsqueda",q:"Tienes cientos de archivos y necesitas encontrar rápidamente un PDF que contiene la palabra “nube”. ¿Qué harías?",o:["Abrir todos los archivos uno por uno.","Utilizar la búsqueda con palabras clave y filtros.","Descargar todo al computador.","Crear otra cuenta."],a:1,e:"Los buscadores de los servicios en la nube permiten localizar información mediante palabras clave y filtros."},
+{cat:"🔎 Búsqueda",q:"Un archivo de ventas fue colocado accidentalmente en la carpeta Recursos Humanos. ¿Qué acción corresponde?",o:["Dejarlo allí.","Moverlo a la carpeta relacionada con su contenido.","Crear cinco copias.","Cambiar únicamente la extensión."],a:1,e:"La ubicación debe corresponder al contenido y propósito del archivo."},
+{cat:"🔎 Búsqueda",q:"¿Cuál situación representa una mala organización?",o:["Proyecto → 2026 → Evidencias","Asignaturas → Tecnología → Tareas","Archivos → Cosas → Varios → Nuevo → Nuevo2","Empresa → Clientes → 2026"],a:2,e:"Los nombres ambiguos y la estructura poco significativa dificultan encontrar información."},
+{cat:"🔐 Seguridad",q:"Debes entregar una tarea únicamente a tu docente. ¿Cuál opción es más segura?",o:["Publicar el enlace en Internet.","Compartir el archivo con la persona específica.","Compartir toda tu cuenta.","Dar tu contraseña."],a:1,e:"El acceso debe limitarse a las personas que necesitan la información."},
+{cat:"🔐 Seguridad",q:"Una carpeta contiene información privada de estudiantes. ¿Qué configuración presenta mayor riesgo?",o:["Acceso restringido.","Usuarios específicos.","Enlace público para cualquier persona.","Solo lectura para usuarios autorizados."],a:2,e:"La información privada no debería estar disponible públicamente."},
+{cat:"🔐 Seguridad",q:"¿Qué medida proporciona una capa adicional de protección a una cuenta?",o:["Usar la misma contraseña en todos los servicios.","Activar autenticación de dos factores.","Compartir la contraseña.","Escribir la contraseña en una carpeta."],a:1,e:"La autenticación de dos factores agrega una segunda verificación de identidad."},
+{cat:"💾 Respaldo",q:"Tu proyecto final está únicamente en la nube y alguien lo elimina accidentalmente. ¿Qué medida previa habría reducido el riesgo?",o:["Tener una copia de respaldo.","Cambiar el color de la carpeta.","Cambiar el nombre del archivo.","Crear un acceso directo."],a:0,e:"Un respaldo permite recuperar información ante pérdidas o eliminaciones."},
+{cat:"♻️ Duplicados",q:"Encuentras: Proyecto.docx, Proyecto_final.docx, Proyecto_final2.docx y Proyecto_definitivo.docx. ¿Cuál es el principal problema?",o:["Los archivos tienen demasiadas extensiones.","Existe una nomenclatura poco clara y posibles duplicados.","Los documentos no pueden almacenarse en la nube.","Todos los nombres son correctos."],a:1,e:"Las versiones ambiguas pueden provocar confusión sobre cuál archivo es el vigente."},
+{cat:"👥 Colaboración",q:"Cuatro estudiantes trabajan en una misma presentación. ¿Qué ventaja ofrece un archivo compartido en la nube?",o:["Cada estudiante debe enviar una copia por correo.","Pueden colaborar sobre un recurso central con permisos controlados.","Nadie puede modificarlo.","La organización deja de ser necesaria."],a:1,e:"La nube facilita la colaboración y permite administrar permisos."},
+{cat:"👥 Colaboración",q:"Solo necesitas compartir una presentación, no toda tu carpeta de proyectos. ¿Qué deberías compartir?",o:["Toda tu unidad.","La carpeta principal.","El archivo específico necesario.","Tu contraseña."],a:2,e:"Se debe compartir únicamente el recurso necesario, no información adicional."},
+{cat:"🧠 Toma de decisiones",q:"Una empresa tiene carpetas Clientes, Ventas, Inventario y Recursos Humanos. ¿Dónde debería almacenarse una lista de productos disponibles?",o:["Recursos Humanos.","Clientes.","Inventario.","Ventas."],a:2,e:"La lista de productos corresponde al área de inventario."},
+{cat:"🧠 Toma de decisiones",q:"Una carpeta contiene 2,000 archivos sin ninguna clasificación. ¿Qué acción sería más razonable?",o:["Eliminar todos los archivos.","Crear una estructura por año, tipo o categoría según las necesidades.","Cambiar todos a PDF.","Descargar todo al teléfono."],a:1,e:"La clasificación mediante carpetas y criterios definidos facilita la gestión de grandes cantidades de información."},
+{cat:"🧩 Análisis",q:"Una institución necesita localizar rápidamente documentos de 2025 y 2026. ¿Qué estrategia sería más útil?",o:["Guardar ambos años mezclados.","Separar la información mediante una estructura que diferencie los años.","Nombrar todos los archivos “documento”.","Eliminar los documentos antiguos."],a:1,e:"Separar por año permite localizar y administrar la información histórica con mayor facilidad."},
+{cat:"🚨 Caso práctico",q:"Un estudiante comparte por error una carpeta completa cuando solo debía compartir un archivo. ¿Qué debe hacer?",o:["Dejarla compartida.","Revisar los permisos y limitar el acceso al recurso necesario.","Compartir otra carpeta.","Eliminar toda su cuenta."],a:1,e:"Debe corregir los permisos y aplicar el principio de mínimo acceso."},
+{cat:"🏆 Desafío final",q:"¿Cuál conjunto reúne mejores prácticas para gestionar información en la nube?",o:["Nombres claros + carpetas organizadas + permisos adecuados + respaldos.","Una carpeta para todo + nombres genéricos.","Enlaces públicos + contraseñas compartidas.","Duplicados + archivos sin clasificación."],a:0,e:"Una gestión adecuada combina organización, nomenclatura, seguridad, colaboración y respaldo."}
+];
+
+let index=0,score=0,answered=false;
+const $=id=>document.getElementById(id);
+
+function showQuestion(){
+ const q=questions[index];
+ answered=false;
+ $("category").textContent=q.cat;
+ $("current").textContent=index+1;
+ $("score").textContent=score;
+ $("progress").style.width=((index+1)/questions.length*100)+"%";
+ $("question").textContent=q.q;
+ $("options").innerHTML="";
+ q.o.forEach((text,i)=>{
+   const b=document.createElement("button");
+   b.className="option";
+   b.textContent=String.fromCharCode(65+i)+". "+text;
+   b.addEventListener("click",()=>answer(i,b));
+   $("options").appendChild(b);
+ });
+ $("feedback").className="feedback";
+ $("feedback").innerHTML="";
+ $("nextBtn").classList.add("hidden");
+}
+
+function answer(choice,button){
+ if(answered)return;
+ answered=true;
+ const q=questions[index];
+ const buttons=[...$("options").children];
+ buttons.forEach(b=>b.disabled=true);
+ if(choice===q.a){
+   score+=5;
+   button.classList.add("correct");
+   $("feedback").className="feedback show correctbox";
+   $("feedback").innerHTML="<strong>✅ ¡Correcto! +5 puntos</strong><br>"+q.e;
+ }else{
+   button.classList.add("wrong");
+   buttons[q.a].classList.add("correct");
+   $("feedback").className="feedback show wrongbox";
+   $("feedback").innerHTML="<strong>❌ Respuesta incorrecta</strong><br>"+q.e;
+ }
+ $("score").textContent=score;
+ $("nextBtn").classList.remove("hidden");
+}
+
+$("startBtn").addEventListener("click",()=>{
+ $("intro").classList.add("hidden");
+ $("quiz").classList.remove("hidden");
+ showQuestion();
+});
+
+$("nextBtn").addEventListener("click",()=>{
+ index++;
+ if(index<questions.length) showQuestion();
+ else finish();
+});
+
+function finish(){
+ $("quiz").classList.add("hidden");
+ $("result").classList.remove("hidden");
+ let level;
+ if(score>=90) level="🏆 EXPERTO/A EN GESTIÓN DE LA NUBE";
+ else if(score>=80) level="🥇 GESTOR/A DIGITAL";
+ else if(score>=70) level="🥈 ORGANIZADOR/A DIGITAL";
+ else if(score>=60) level="🥉 EXPLORADOR/A DIGITAL";
+ else level="🔎 APRENDIZ DIGITAL";
+ $("result").innerHTML=`
+ <div style="font-size:55px">☁️</div>
+ <div class="level">${level}</div>
+ <div class="bigscore">${score}/100</div>
+ <p>Has completado los 20 retos de almacenamiento y organización de información en la nube.</p>
+ <div class="card" style="box-shadow:none;background:#f7f9fc;text-align:left">
+ <strong>📸 Evidencia para Teams</strong>
+ <p class="small">Toma una captura de esta pantalla y súbela a la tarea de Microsoft Teams según las indicaciones de tu docente.</p>
+ </div>
+ <button class="restart" id="restart">🔄 Repetir actividad</button>
+ `;
+ $("restart").addEventListener("click",()=>{
+   index=0;score=0;
+   $("result").classList.add("hidden");
+   $("quiz").classList.remove("hidden");
+   showQuestion();
+ });
+}
+</script>
+</body>
+</html>
